@@ -119,9 +119,9 @@ void SPIRead(uint32_t address, uint8_t *data, int32_t len) {
     b = ReadReg(0x60);
   } while (b & 1);  // TODO: add timeout and reset the controller
   while (len > 0) {
-    int32_t read_len = 1;//len;
-    if (read_len > 64)
-      read_len = 64;
+    int32_t read_len = len;
+    if (read_len > 32)
+      read_len = 32;
     ReadBytesFromAddr(0x70, data, read_len);
     data += read_len;
     len -= read_len;
@@ -407,7 +407,7 @@ int main(int argc, char* argv[])
   b = SPICommonCommand(E_CC_READ, 0x5, 1, 0, 0);
   printf("Flash status register: 0x%02x\n", b);
 
-#if 0
+#if 1
   SaveFlash("flash-test.bin", chip->size_kb * 1024);
 #else
   ProgramFlash("backup.bin", chip->size_kb * 1024);

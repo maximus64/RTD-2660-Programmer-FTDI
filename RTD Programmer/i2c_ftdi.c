@@ -90,10 +90,10 @@ void i2c_write_cmd(struct i2c_ctx *ctx, uint8_t val)
 	i2c_set_io_cmd(ctx, SDA, I2C_DIR_OUT);
 }
 
-void i2c_read_cmd(struct i2c_ctx *ctx)
+void i2c_read_cmd(struct i2c_ctx *ctx, int last)
 {
 	uint8_t bytecmd[] = {0x20, 0x00, 0x00}; //clock out 1 byte 
-	uint8_t ackcmd[] = {0x13, 0x00, 0xff}; //clock in 1'b1
+	uint8_t ackcmd[] = {0x13, 0x00, last ? 0xff : 0x00}; //clock in ack
 
 	i2c_append_cmd(ctx, bytecmd, sizeof(bytecmd));
 	i2c_append_cmd(ctx, ackcmd, sizeof(ackcmd));
@@ -169,7 +169,7 @@ void i2c_recv(struct i2c_ctx *ctx, uint8_t addr, int len, uint8_t *buf)
 	//read data
 	for(i=0; i<len; ++i)
 	{
-		i2c_read_cmd(ctx);
+		i2c_read_cmd(ctx, 1);
 
 		//write send immediate command
 		uint8_t cmd[]={0x87};
@@ -200,7 +200,7 @@ void i2c_recv(struct i2c_ctx *ctx, uint8_t addr, int len, uint8_t *buf)
 
 	//read data
 	for(i=0; i<len; ++i)
-		i2c_read_cmd(ctx);
+		i2c_read_cmd(ctx, i==len-1);
 
 	i2c_end_cmd(ctx);
 
