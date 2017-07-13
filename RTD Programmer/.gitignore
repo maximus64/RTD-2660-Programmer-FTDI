@@ -2,3 +2,6 @@
 /Debug
 /ipch
 /*.user
+*.o
+rtd_programer
+*.bin

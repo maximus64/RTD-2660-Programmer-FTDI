@@ -44,6 +44,7 @@ static const FlashDesc FlashDevices[] = {
     {"W25X20"     , 0xEF3012,      256,       256, 64},
     {"W25X40"     , 0xEF3013,      512,       256, 64},
     {"W25X80"     , 0xEF3014, 1 * 1024,       256, 64},
+    {"W25Q80BL"   , 0xef4014, 1 * 1024,       256, 64},
     // Manufacturer: Macronix 
     {"MX25L512"   , 0xC22010,       64,       256, 64},
     {"MX25L3205"  , 0xC22016, 4 * 1024,       256, 64},
@@ -118,7 +119,7 @@ void SPIRead(uint32_t address, uint8_t *data, int32_t len) {
     b = ReadReg(0x60);
   } while (b & 1);  // TODO: add timeout and reset the controller
   while (len > 0) {
-    int32_t read_len = len;
+    int32_t read_len = 1;//len;
     if (read_len > 64)
       read_len = 64;
     ReadBytesFromAddr(0x70, data, read_len);
@@ -405,11 +406,11 @@ int main(int argc, char* argv[])
 
   b = SPICommonCommand(E_CC_READ, 0x5, 1, 0, 0);
   printf("Flash status register: 0x%02x\n", b);
-  
+
 #if 0
   SaveFlash("flash-test.bin", chip->size_kb * 1024);
 #else
-  ProgramFlash("1024x600.bin", chip->size_kb * 1024);
+  ProgramFlash("backup.bin", chip->size_kb * 1024);
 #endif
   CloseI2C();
 	return 0;
